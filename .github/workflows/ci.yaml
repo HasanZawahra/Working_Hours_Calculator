@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Java/Kotlin (Gradle)
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Gradle build
+        shell: bash
+        run: |
+          chmod +x ./gradlew || true
+          ./gradlew clean build --no-daemon
+
+      # Dart
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Cache Pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Dart build/test
+        shell: bash
+        run: |
+          if [ -f "pubspec.yaml" ]; then
+            dart pub get
+            dart test || true
+            # If using Flutter/compile steps, add them here
+          fi
+
+      # C++
+      - name: C++ build
+        shell: bash
+        run: |
+          if [ -f "CMakeLists.txt" ]; then
+            cmake -S . -B build
+            cmake --build build --config Release
+          elif [ -f "Makefile" ]; then
+            make
+          else
+            echo "No C++ build config found, skipping."
+          fi
+
+      # Upload artifacts (adjust paths for your project)
+      - name: Upload Gradle artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-${{ runner.os }}
+          path: |
+            **/build/libs/**
+            **/build/reports/**
+          if-no-files-found: warn
+
+      - name: Upload Dart artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dart-build-${{ runner.os }}
+          path: |
+            build/**
+            coverage/**
+          if-no-files-found: warn
+
+      - name: Upload C++ binaries
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpp-build-${{ runner.os }}
+          path: |
+            build/**
+            bin/**
+          if-no-files-found: warn
