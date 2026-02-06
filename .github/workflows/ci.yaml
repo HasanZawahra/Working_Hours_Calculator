@@ -9,12 +9,10 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows-latest ]
-        gradle-dir: [ "android" ]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
@@ -29,12 +27,18 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.24.0" # set to your required version
+
       - name: Create local.properties for Android
-        shell: bash
-        working-directory: ${{ matrix.gradle-dir }}
+        working-directory: android
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "Generated local.properties with sdk.dir=${ANDROID_SDK_ROOT}"
+          echo "flutter.sdk=${FLUTTER_HOME}" >> local.properties
+          echo "Generated local.properties: sdk.dir=${ANDROID_SDK_ROOT}, flutter.sdk=${FLUTTER_HOME}"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -42,39 +46,8 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v3
         with:
-          build-root-directory: ${{ matrix.gradle-dir }}
+          build-root-directory: android
           arguments: clean build --no-daemon
-
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
-
-      - name: Cache Pub
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
-      - name: Dart build/test
-        shell: bash
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            dart pub get
-            dart test || true
-          fi
-
-      - name: C++ build
-        shell: bash
-        run: |
-          if [ -f "CMakeLists.txt" ]; then
-            cmake -S . -B build
-            cmake --build build --config Release
-          elif [ -f "Makefile" ]; then
-            make
-          else
-            echo "No C++ build config found, skipping."
-          fi
 
       - name: Upload Gradle artifacts
         if: success()
@@ -84,24 +57,4 @@ jobs:
           path: |
             **/build/libs/**
             **/build/reports/**
-          if-no-files-found: warn
-
-      - name: Upload Dart artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dart-build-${{ runner.os }}
-          path: |
-            build/**
-            coverage/**
-          if-no-files-found: warn
-
-      - name: Upload C++ binaries
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cpp-build-${{ runner.os }}
-          path: |
-            build/**
-            bin/**
           if-no-files-found: warn
