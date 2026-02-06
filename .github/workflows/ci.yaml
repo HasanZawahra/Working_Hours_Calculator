@@ -1,3 +1,4 @@
+# yaml
 name: CI
 
 on:
@@ -25,21 +26,23 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
+      # If your Gradle wrapper lives in a subdirectory, set it here
+      # e.g. working-directory: 'server' or 'android'
       - name: Gradle build
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
+      - name: Run Gradle build
         shell: bash
+        working-directory: .
         run: |
-          chmod +x ./gradlew || true
-          ./gradlew clean build --no-daemon
+          if [ -f "gradlew" ] || [ -f "./gradlew" ]; then
+            chmod +x ./gradlew || true
+            ./gradlew clean build --no-daemon
+          else
+            echo "Gradle wrapper not found. Failing step."
+            exit 1
+          fi
 
       # Dart
       - name: Set up Dart
@@ -59,7 +62,6 @@ jobs:
           if [ -f "pubspec.yaml" ]; then
             dart pub get
             dart test || true
-            # If using Flutter/compile steps, add them here
           fi
 
       # C++
@@ -75,7 +77,7 @@ jobs:
             echo "No C++ build config found, skipping."
           fi
 
-      # Upload artifacts (adjust paths for your project)
+      # Upload artifacts
       - name: Upload Gradle artifacts
         if: success()
         uses: actions/upload-artifact@v4
