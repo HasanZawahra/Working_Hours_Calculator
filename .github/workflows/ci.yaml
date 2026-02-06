@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        gradle-dir: [ "." ] # change this to the folder that contains `gradlew`, e.g. `server` or `android`
+        gradle-dir: [ "android" ]
     runs-on: ${{ matrix.os }}
 
     steps:
