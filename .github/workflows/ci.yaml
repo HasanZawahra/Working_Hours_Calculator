@@ -31,7 +31,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: "3.9.0"
+          flutter-version: "3.5.0"
 
       - name: Create local.properties for Android
         working-directory: android
