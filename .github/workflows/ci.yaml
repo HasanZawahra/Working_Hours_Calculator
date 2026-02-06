@@ -51,12 +51,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Android Gradle build
-        uses: gradle/gradle-build-action@v3
-        with:
-          build-root-directory: android
-          arguments: clean build --no-daemon
-
       - name: Build Flutter Windows (desktop)
         run: |
           flutter config --enable-windows-desktop
