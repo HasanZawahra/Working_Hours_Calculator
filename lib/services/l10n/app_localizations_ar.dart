@@ -115,4 +115,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get invalidHoursPerShiftNumbers =>
       'يرجى إدخال قيم رقمية صحيحة لساعات الدوام.';
+
+  @override
+  String get absences => 'الغيابات';
+
+  @override
+  String get downloadReport => 'تحميل التقرير';
 }

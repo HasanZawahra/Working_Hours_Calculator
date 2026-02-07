@@ -54,7 +54,7 @@ class ReportDialog extends StatelessWidget {
             const SizedBox(height: 4),
             ...perDayHours.map((e) => Text('${e.key}: ${e.value.toStringAsFixed(2)} h')),
             const Divider(),
-            Text('Absences: $absenceCount'),
+            Text('${t.absences}: $absenceCount'),
             const Divider(),
             Text('${t.workingDaysMonth}: ${workingDays.toStringAsFixed(2)}'),
             Text('${t.hoursPerShiftNormal}: ${hoursPerShift.toStringAsFixed(2)} h'),
@@ -80,7 +80,7 @@ class ReportDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(t.close)),
-        TextButton(onPressed: () async => onSavePdf(), child: const Text('Save PDF')),
+        TextButton(onPressed: () async => onSavePdf(), child: Text(t.downloadReport)),
       ],
     );
   }

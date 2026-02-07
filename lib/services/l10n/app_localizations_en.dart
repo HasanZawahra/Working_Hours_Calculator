@@ -115,4 +115,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get invalidHoursPerShiftNumbers =>
       'Please enter valid numeric values for hours per shift.';
+
+  @override
+  String get absences => 'Absences';
+
+  @override
+  String get downloadReport => 'Download report';
 }

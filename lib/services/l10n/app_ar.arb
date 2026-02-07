@@ -32,5 +32,7 @@
   "totalHours": "إجمالي الساعات",
   "normalHourlyPayRate": "معدل الأجر العادي لكل ساعة",
   "invalidWorkingDaysNumbers" : "يرجى إدخال قيم رقمية صحيحة لأيام العمل.",
-  "invalidHoursPerShiftNumbers" : "يرجى إدخال قيم رقمية صحيحة لساعات الدوام."
+  "invalidHoursPerShiftNumbers" : "يرجى إدخال قيم رقمية صحيحة لساعات الدوام.",
+  "absences": "الغيابات",
+  "downloadReport": "تحميل التقرير"
 }

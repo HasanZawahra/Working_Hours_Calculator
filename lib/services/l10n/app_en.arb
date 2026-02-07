@@ -32,5 +32,7 @@
   "totalHours": "Total hours",
   "normalHourlyPayRate": "Normal hourly pay rate",
   "invalidWorkingDaysNumbers" : "Please enter valid numeric values for working days.",
-  "invalidHoursPerShiftNumbers" : "Please enter valid numeric values for hours per shift."
+  "invalidHoursPerShiftNumbers" : "Please enter valid numeric values for hours per shift.",
+  "absences": "Absences",
+  "downloadReport": "Download report"
 }
