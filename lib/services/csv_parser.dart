@@ -1,11 +1,12 @@
-// dart
-// File: 'lib/services/csv_parser.dart'
+import '../models/csv_parse_result.dart';
 import '../models/interval.dart';
 
 class CsvParser {
-  List<Interval> parse(String content) {
+  CsvParseResult parse(String content) {
     final lines = content.split(RegExp(r'\r?\n')).where((l) => l.trim().isNotEmpty).toList();
-    if (lines.isEmpty) return [];
+    if (lines.isEmpty) return const CsvParseResult(intervals: [], absenceCount: 0);
+
+    int absences = 0;
 
     // Detect 3-row (date,start,end) sheet-like format
     final firstCells = _splitCsvLine(lines[0]);
@@ -18,19 +19,33 @@ class CsvParser {
       final intervals = <Interval>[];
       for (var i = 0; i < count; i++) {
         final date = dates[i].isEmpty ? 'col_${i + 1}' : dates[i];
-        final start = _parseHhMm(starts[i]);
-        final end = _parseHhMm(ends[i]);
-        if (start == null || end == null) continue;
+
+        final startRaw = starts[i].trim();
+        final endRaw = ends[i].trim();
+        if (startRaw.isEmpty || endRaw.isEmpty) {
+          absences++;
+          continue;
+        }
+
+        final start = _parseHhMm(startRaw);
+        final end = _parseHhMm(endRaw);
+        if (start == null || end == null) {
+          absences++;
+          continue;
+        }
 
         final minutes = _diffMinutesAcrossMidnight(start, end);
-        if (minutes <= 0) continue;
+        if (minutes <= 0) {
+          absences++;
+          continue;
+        }
 
         intervals.add(Interval(date, minutes.toDouble()));
       }
-      return intervals;
+      return CsvParseResult(intervals: intervals, absenceCount: absences);
     }
 
-    // Fallback: row-per-shift formats (existing behavior)
+    // Fallback: row-per-shift formats
     final intervals = <Interval>[];
     int startIdx = 0;
     if (lines.isNotEmpty) {
@@ -50,35 +65,53 @@ class CsvParser {
         date = cells[0];
         startStr = cells[1];
         endStr = cells[2];
+        if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
+          absences++;
+          continue;
+        }
       } else if (cells.length == 2) {
         date = cells[0];
         final pair = _splitTimePair(cells[1]);
         startStr = pair.$1;
         endStr = pair.$2;
+        if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
+          absences++;
+          continue;
+        }
       } else if (cells.length == 1) {
         final pair = _splitTimePair(cells[0]);
         startStr = pair.$1;
         endStr = pair.$2;
+        if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
+          absences++;
+          continue;
+        }
       } else {
+        // Unreachable due to line filtering, but keep safe.
         continue;
       }
 
-      if (startStr == null || endStr == null) continue;
-
-      final start = _parseHhMm(startStr);
-      final end = _parseHhMm(endStr);
-      if (start == null || end == null) continue;
+      final start = _parseHhMm(startStr!);
+      final end = _parseHhMm(endStr!);
+      if (start == null || end == null) {
+        absences++;
+        continue;
+      }
 
       final minutes = _diffMinutesAcrossMidnight(start, end);
-      if (minutes <= 0) continue;
+      if (minutes <= 0) {
+        absences++;
+        continue;
+      }
 
       final dateKey = (date == null || date.isEmpty) ? 'row_${i - startIdx + 1}' : date;
       intervals.add(Interval(dateKey, minutes.toDouble()));
     }
-    return intervals;
+
+    return CsvParseResult(intervals: intervals, absenceCount: absences);
   }
 
-  // Calculates duration, supporting overnight (end < start) by wrapping across midnight.
+  // Calculates duration, supporting overnight (end < start).
   int _diffMinutesAcrossMidnight(int startMinutes, int endMinutes) {
     return endMinutes >= startMinutes
         ? (endMinutes - startMinutes)
@@ -92,6 +125,8 @@ class CsvParser {
     if (parts.length != 2) return (null, null);
     return (parts[0], parts[1]);
   }
+
+  bool _nonEmpty(String? s) => s != null && s.trim().isNotEmpty;
 
   int? _parseHhMm(String s) {
     final m = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(s);

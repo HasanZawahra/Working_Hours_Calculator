@@ -12,6 +12,7 @@ class WorkingHoursState {
   final double totalPay;
   final List<MapEntry<String, double>> perDayHours;
   final bool payOvertimeSeparately;
+  final int absenceCount;
 
   const WorkingHoursState({
     this.csvPath,
@@ -23,6 +24,7 @@ class WorkingHoursState {
     this.totalPay = 0,
     this.perDayHours = const [],
     this.payOvertimeSeparately = true,
+    this.absenceCount = 0,
   });
 
   WorkingHoursState copyWith({
@@ -35,6 +37,7 @@ class WorkingHoursState {
     double? totalPay,
     List<MapEntry<String, double>>? perDayHours,
     bool? payOvertimeSeparately,
+    int? absenceCount,
   }) {
     return WorkingHoursState(
       csvPath: csvPath ?? this.csvPath,
@@ -46,6 +49,7 @@ class WorkingHoursState {
       totalPay: totalPay ?? this.totalPay,
       perDayHours: perDayHours ?? this.perDayHours,
       payOvertimeSeparately: payOvertimeSeparately ?? this.payOvertimeSeparately,
+      absenceCount: absenceCount ?? this.absenceCount,
     );
   }
 }
@@ -74,9 +78,10 @@ class WorkingHoursController {
       throw StateError('CSV path is null');
     }
     final content = await File(state.csvPath!).readAsString();
-    final intervals = _parser.parse(content);
+    final parsed = _parser.parse(content);
+
     final result = _calculator.compute(
-      intervals: intervals,
+      intervals: parsed.intervals,
       salary: salary,
       workingDays: workingDays,
       hoursPerShift: hoursPerShift,
@@ -136,6 +141,7 @@ class WorkingHoursController {
       overtimePay: result.overtimePay,
       totalPay: result.totalPay,
       perDayHours: perDay,
+      absenceCount: parsed.absenceCount,
     );
 
     return state;

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import '../services/languege/l10n/app_localizations.dart';
+import '../services/l10n/app_localizations.dart';
 import '../controllers/working_hours_controller.dart';
 import '../services/report_generator.dart';
 import '../widgets/report_dialog.dart';
@@ -111,6 +111,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         normalHourlyRate: s.normalHourlyRate,
         overtimeRate: overtimeRate,
         perDayHours: s.perDayHours,
+        absenceCount: s.absenceCount,
         onSavePdf: () => _reportGen.generateAndShare(
           t: t,
           csvPath: s.csvPath,
@@ -125,6 +126,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
           normalHourlyRate: s.normalHourlyRate,
           overtimeRate: overtimeRate,
           perDayHours: s.perDayHours,
+          absenceCount: s.absenceCount,
         ),
       ),
     );

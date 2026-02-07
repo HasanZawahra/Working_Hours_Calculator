@@ -1,6 +1,5 @@
-// dart
 import 'package:flutter/material.dart';
-import '../services/languege/l10n/app_localizations.dart';
+import '../services/l10n/app_localizations.dart';
 
 typedef GeneratePdfCallback = Future<void> Function();
 
@@ -18,6 +17,7 @@ class ReportDialog extends StatelessWidget {
   final double normalHourlyRate;
   final double overtimeRate;
   final List<MapEntry<String, double>> perDayHours;
+  final int absenceCount;
   final GeneratePdfCallback onSavePdf;
 
   const ReportDialog({
@@ -35,6 +35,7 @@ class ReportDialog extends StatelessWidget {
     required this.normalHourlyRate,
     required this.overtimeRate,
     required this.perDayHours,
+    required this.absenceCount,
     required this.onSavePdf,
   });
 
@@ -52,6 +53,8 @@ class ReportDialog extends StatelessWidget {
             Text(t.perDayBreakdown),
             const SizedBox(height: 4),
             ...perDayHours.map((e) => Text('${e.key}: ${e.value.toStringAsFixed(2)} h')),
+            const Divider(),
+            Text('Absences: $absenceCount'),
             const Divider(),
             Text('${t.workingDaysMonth}: ${workingDays.toStringAsFixed(2)}'),
             Text('${t.hoursPerShiftNormal}: ${hoursPerShift.toStringAsFixed(2)} h'),
