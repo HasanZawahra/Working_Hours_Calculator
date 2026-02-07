@@ -1,9 +1,21 @@
+// Dart
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../services/l10n/app_localizations.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:arabic_reshaper/arabic_reshaper.dart';
+import 'package:bidi/bidi.dart' as Bidi;
+import 'l10n/app_localizations.dart';
 
 class ReportGenerator {
+
+
+
+  pw.Widget rtlText(String s, {pw.TextStyle? style}) => pw.Directionality(
+    textDirection: pw.TextDirection.rtl,
+    child: pw.Text(s, style: style, textAlign: pw.TextAlign.right),
+  );
+
   Future<void> generateAndShare({
     required AppLocalizations t,
     required String? csvPath,
@@ -22,7 +34,25 @@ class ReportGenerator {
   }) async {
     final doc = pw.Document();
 
-    pw.Widget labeledRow(String label, String value) => pw.Row(
+    // Load fonts (ensure these files exist in `assets/fonts`)
+    final base = pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSans-Regular.ttf'));
+    final bold = pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSans-Bold.ttf'));
+    final arabic = pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSansArabic-Regular.ttf'));
+    final arabicBold = pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSansArabic-Bold.ttf'));
+
+    pw.Widget labeledRowRtl(String label, String value) => pw.Directionality(
+      textDirection: pw.TextDirection.rtl,
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.center,
+        children: [
+          rtlText(label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          rtlText(value),
+        ],
+      ),
+    );
+
+    pw.Widget labeledRowLtr(String label, String value) => pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
         pw.Text(label, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
@@ -34,13 +64,28 @@ class ReportGenerator {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(24),
+        theme: pw.ThemeData.withFont(
+          base: base,
+          bold: bold,
+          fontFallback: [arabic, arabicBold],
+        ),
         build: (context) => [
-          pw.Text(t.reportTitle, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 8),
-          pw.Text('${t.csvLabel}: ${csvPath ?? 'N/A'}'),
-          pw.SizedBox(height: 12),
-          pw.Text(t.perDayBreakdown, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 6),
+          // Arabic header block (RTL)
+          pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.end,
+              children: [
+                rtlText(t.reportTitle, style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 8),
+                rtlText('${t.csvLabel}: ${csvPath ?? 'N/A'}'),
+                pw.SizedBox(height: 12),
+                rtlText(t.perDayBreakdown, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              ],
+            ),
+          ),
+
+          // Table (LTR for dates/numbers)
           pw.Table(
             border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey300),
             columnWidths: {0: const pw.FlexColumnWidth(2), 1: const pw.FlexColumnWidth(1)},
@@ -48,52 +93,67 @@ class ReportGenerator {
               pw.TableRow(
                 decoration: const pw.BoxDecoration(color: PdfColors.grey100),
                 children: [
-                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
-                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('Hours', style: pw.TextStyle(fontWeight: pw.FontWeight.bold))),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(6),
+                    child: pw.Text('Date', style: pw.TextStyle(fontWeight: pw.FontWeight.bold), textAlign: pw.TextAlign.left),
+                  ),
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.all(6),
+                    child: pw.Text('Hours', style: pw.TextStyle(fontWeight: pw.FontWeight.bold), textAlign: pw.TextAlign.left),
+                  ),
                 ],
               ),
               ...perDayHours.map((e) => pw.TableRow(
                 children: [
-                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(e.key)),
-                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('${e.value.toStringAsFixed(2)} h')),
+                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text(e.key, textAlign: pw.TextAlign.left)),
+                  pw.Padding(padding: const pw.EdgeInsets.all(6), child: pw.Text('${e.value.toStringAsFixed(2)} h', textAlign: pw.TextAlign.left)),
                 ],
               )),
             ],
           ),
+
           pw.SizedBox(height: 12),
           pw.Divider(),
           pw.SizedBox(height: 6),
-          labeledRow(t.workingDaysMonth, workingDays.toStringAsFixed(2)),
-          labeledRow(t.hoursPerShiftNormal, '${hoursPerShift.toStringAsFixed(2)} h'),
-          labeledRow(t.absences, absenceCount.toString()),
-          labeledRow(t.useOvertimeRate, payOvertimeSeparately ? 'Yes' : 'No'),
+
+          // Arabic labeled rows (RTL)
+          labeledRowRtl(t.workingDaysMonth, workingDays.toStringAsFixed(2)),
+          labeledRowRtl(t.hoursPerShiftNormal, '${hoursPerShift.toStringAsFixed(2)} h'),
+          labeledRowRtl(t.absences, absenceCount.toString()),
+          labeledRowRtl(t.useOvertimeRate, payOvertimeSeparately ? 'Yes' : 'No'),
+
           pw.SizedBox(height: 12),
           pw.Divider(),
-          pw.Text('Hours', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+
+          // Section titles RTL
+          rtlText('Hours', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 6),
-          labeledRow(t.normalHours, '${normalHours.toStringAsFixed(2)} h'),
-          labeledRow(t.overtimeHours, '${overtimeHours.toStringAsFixed(2)} h'),
-          labeledRow(t.totalHours, '${(normalHours + overtimeHours).toStringAsFixed(2)} h'),
+          labeledRowRtl(t.normalHours, '${normalHours.toStringAsFixed(2)} h'),
+          labeledRowRtl(t.overtimeHours, '${overtimeHours.toStringAsFixed(2)} h'),
+          labeledRowRtl(t.totalHours, '${(normalHours + overtimeHours).toStringAsFixed(2)} h'),
+
           pw.SizedBox(height: 12),
           pw.Divider(),
+
           if (payOvertimeSeparately) ...[
-            pw.Text('Rates', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            rtlText('Rates', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 6),
-            labeledRow(t.normalHourlyPayRate, normalHourlyRate.toStringAsFixed(2)),
-            labeledRow(t.overtimeRateLabel, overtimeRate.toStringAsFixed(2)),
+            labeledRowRtl(t.normalHourlyPayRate, normalHourlyRate.toStringAsFixed(2)),
+            labeledRowRtl(t.overtimeRateLabel, overtimeRate.toStringAsFixed(2)),
             pw.SizedBox(height: 6),
-            pw.Text('Pay', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            rtlText('Pay', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 6),
-            labeledRow(t.normalPay, normalPay.toStringAsFixed(2)),
-            labeledRow(t.overtimePay, overtimePay.toStringAsFixed(2)),
+            labeledRowRtl(t.normalPay, normalPay.toStringAsFixed(2)),
+            labeledRowRtl(t.overtimePay, overtimePay.toStringAsFixed(2)),
           ] else ...[
-            pw.Text(t.overtimeMerged, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+            rtlText(t.overtimeMerged, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 6),
-            labeledRow(t.normalPay, normalPay.toStringAsFixed(2)),
+            labeledRowRtl(t.normalPay, normalPay.toStringAsFixed(2)),
           ],
+
           pw.SizedBox(height: 12),
           pw.Divider(),
-          labeledRow(t.totalPay, totalPay.toStringAsFixed(2)),
+          labeledRowRtl(t.totalPay, totalPay.toStringAsFixed(2)),
         ],
       ),
     );
