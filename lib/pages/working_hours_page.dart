@@ -41,6 +41,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
   void _clearCsv() {
     setState(() => _controller.setCsvPath(null));
+
   }
 
   void _showError(String title, String msg) {

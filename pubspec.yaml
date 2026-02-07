@@ -35,8 +35,7 @@ dependencies:
     sdk: flutter
   pdf: ^3.10.7
   printing: ^5.13.3
-  arabic_reshaper: ^0.0.1
-  bidi: ^2.0.0
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
