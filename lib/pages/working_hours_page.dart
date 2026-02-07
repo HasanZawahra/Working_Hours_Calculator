@@ -94,6 +94,34 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     _showReport(newState, workingDays, hoursPerShift, overtimeRate);
   }
 
+  // Prompt for a custom PDF file name and return it (without enforcing extension)
+  Future<String?> _askFileName(BuildContext context, {String? suggestion}) async {
+    final t = AppLocalizations.of(context);
+    final controller = TextEditingController(text: suggestion ?? 'working_hours_report');
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Enter File Name'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: 'File Name',
+            hintText: 'working_hours_report',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text('Save'),
+          ),
+        ],
+      ),
+    );
+    return result == null || result.isEmpty ? null : result;
+  }
+
   void _showReport(WorkingHoursState s, double workingDays, double hoursPerShift, double overtimeRate) {
     final t = AppLocalizations.of(context);
     showDialog(
@@ -113,22 +141,29 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         overtimeRate: overtimeRate,
         perDayHours: s.perDayHours,
         absenceCount: s.absenceCount,
-        onSavePdf: () => _reportGen.generateAndShare(
-          t: t,
-          csvPath: s.csvPath,
-          payOvertimeSeparately: s.payOvertimeSeparately,
-          normalHours: s.normalMinutes / 60.0,
-          overtimeHours: s.overtimeMinutes / 60.0,
-          normalPay: s.normalPay,
-          overtimePay: s.overtimePay,
-          totalPay: s.totalPay,
-          workingDays: workingDays,
-          hoursPerShift: hoursPerShift,
-          normalHourlyRate: s.normalHourlyRate,
-          overtimeRate: overtimeRate,
-          perDayHours: s.perDayHours,
-          absenceCount: s.absenceCount,
-        ),
+        onSavePdf: () async {
+          final suggestion = 'working_hours_report';
+          final inputName = await _askFileName(context, suggestion: suggestion);
+          if (inputName == null) return;
+          final name = inputName.toLowerCase().endsWith('.pdf') ? inputName : '$inputName.pdf';
+          await _reportGen.generateAndShare(
+            t: t,
+            csvPath: s.csvPath,
+            payOvertimeSeparately: s.payOvertimeSeparately,
+            normalHours: s.normalMinutes / 60.0,
+            overtimeHours: s.overtimeMinutes / 60.0,
+            normalPay: s.normalPay,
+            overtimePay: s.overtimePay,
+            totalPay: s.totalPay,
+            workingDays: workingDays,
+            hoursPerShift: hoursPerShift,
+            normalHourlyRate: s.normalHourlyRate,
+            overtimeRate: overtimeRate,
+            perDayHours: s.perDayHours,
+            absenceCount: s.absenceCount,
+            fileName: name,
+          );
+        },
       ),
     );
   }

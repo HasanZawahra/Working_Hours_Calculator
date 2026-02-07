@@ -18,32 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "21"
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: "3.38.9"
-
-      - name: Create local.properties for Android
-        working-directory: android
-        run: |
-          FLUTTER_SDK="${FLUTTER_HOME:-$FLUTTER_ROOT}"
-          if [ -z "$FLUTTER_SDK" ]; then
-            echo "FLUTTER_HOME\/FLUTTER_ROOT not set" >&2
-            exit 1
-          fi
-          echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "flutter.sdk=${FLUTTER_SDK}" >> local.properties
-          echo "Generated local.properties:" && cat local.properties
 
       - name: Flutter pub get
         run: flutter pub get
@@ -55,16 +34,6 @@ jobs:
         run: |
           flutter config --enable-windows-desktop
           flutter build windows --release
-
-      - name: Upload Android artifacts
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gradle-build-${{ runner.os }}
-          path: |
-            **/build/libs/**
-            **/build/reports/**
-          if-no-files-found: warn
 
       - name: Upload Windows artifacts
         if: success()
