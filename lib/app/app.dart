@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/languege/l10n/app_localizations.dart';
-import '../services/languege/localization/locale_controller.dart';
+import '../services/l10n/app_localizations.dart';
+import '../controllers/locale_controller.dart';
 import '../pages/working_hours_page.dart';
 
 class WorkingHoursApp extends StatefulWidget {

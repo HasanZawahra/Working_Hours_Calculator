@@ -301,6 +301,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter valid numeric values for hours per shift.'**
   String get invalidHoursPerShiftNumbers;
+
+  /// No description provided for @absences.
+  ///
+  /// In en, this message translates to:
+  /// **'Absences'**
+  String get absences;
+
+  /// No description provided for @downloadReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Download report'**
+  String get downloadReport;
 }
 
 class _AppLocalizationsDelegate

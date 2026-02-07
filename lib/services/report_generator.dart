@@ -1,8 +1,7 @@
-// dart
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-import '../services/languege/l10n/app_localizations.dart';
+import '../services/l10n/app_localizations.dart';
 
 class ReportGenerator {
   Future<void> generateAndShare({
@@ -19,6 +18,7 @@ class ReportGenerator {
     required double normalHourlyRate,
     required double overtimeRate,
     required List<MapEntry<String, double>> perDayHours,
+    required int absenceCount,
   }) async {
     final doc = pw.Document();
 
@@ -62,10 +62,10 @@ class ReportGenerator {
           ),
           pw.SizedBox(height: 12),
           pw.Divider(),
-          pw.Text('Settings', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
           pw.SizedBox(height: 6),
           labeledRow(t.workingDaysMonth, workingDays.toStringAsFixed(2)),
           labeledRow(t.hoursPerShiftNormal, '${hoursPerShift.toStringAsFixed(2)} h'),
+          labeledRow(t.absences, absenceCount.toString()),
           labeledRow(t.useOvertimeRate, payOvertimeSeparately ? 'Yes' : 'No'),
           pw.SizedBox(height: 12),
           pw.Divider(),
