@@ -7,14 +7,6 @@ project(whcalculator LANGUAGES CXX)
 set(BINARY_NAME "whcalculator")
 set(EXE_OUTPUT_NAME "Working Hours Calculator")
 
-add_executable(${BINARY_NAME} WIN32
-  "flutter/ephemeral/flutter_windows.cpp"
-  "runner/main.cpp"
-  "runner/runner.exe.manifest"
-  "runner/Runner.rc"
-  # ...
-)
-
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)
