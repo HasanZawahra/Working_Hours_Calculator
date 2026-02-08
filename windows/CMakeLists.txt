@@ -4,7 +4,8 @@ project(whcalculator LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "Working_Hours_Calculator")
+set(BINARY_NAME "whcalculator")
+set(EXE_OUTPUT_NAME "Working Hours Calculator")
 
 add_executable(${BINARY_NAME} WIN32
   "flutter/ephemeral/flutter_windows.cpp"
