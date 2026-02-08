@@ -41,6 +41,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
 
   void _clearCsv() {
     setState(() => _controller.setCsvPath(null));
+
   }
 
   void _showError(String title, String msg) {
@@ -53,9 +54,19 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       ),
     );
   }
+  bool _isNumber(String s) => double.tryParse(s) != null;
 
   Future<void> _compute() async {
     final t = AppLocalizations.of(context);
+
+    if (!_isNumber(_salaryCtrl.text) ||
+        !_isNumber(_workingDaysCtrl.text) ||
+        !_isNumber(_hoursPerShiftCtrl.text) ||
+        (_controller.state.payOvertimeSeparately && _overtimeRateCtrl.text.isNotEmpty && !_isNumber(_overtimeRateCtrl.text))) {
+      _showError(t.error, t.invalidNumbers);
+      return;
+    }
+
     if (_controller.state.csvPath == null) {
       _showError(t.error, t.pleaseSelectCsv);
       return;
@@ -93,6 +104,34 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     _showReport(newState, workingDays, hoursPerShift, overtimeRate);
   }
 
+  // Prompt for a custom PDF file name and return it (without enforcing extension)
+  Future<String?> _askFileName(BuildContext context, {String? suggestion}) async {
+    final t = AppLocalizations.of(context);
+    final controller = TextEditingController(text: suggestion ?? 'working_hours_report');
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('${t.enter} ${t.fileName.toLowerCase()}'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: t.fileName,
+            hintText: 'working_hours_report',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text(t.save),
+          ),
+        ],
+      ),
+    );
+    return result == null || result.isEmpty ? null : result;
+  }
+
   void _showReport(WorkingHoursState s, double workingDays, double hoursPerShift, double overtimeRate) {
     final t = AppLocalizations.of(context);
     showDialog(
@@ -112,22 +151,29 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
         overtimeRate: overtimeRate,
         perDayHours: s.perDayHours,
         absenceCount: s.absenceCount,
-        onSavePdf: () => _reportGen.generateAndShare(
-          t: t,
-          csvPath: s.csvPath,
-          payOvertimeSeparately: s.payOvertimeSeparately,
-          normalHours: s.normalMinutes / 60.0,
-          overtimeHours: s.overtimeMinutes / 60.0,
-          normalPay: s.normalPay,
-          overtimePay: s.overtimePay,
-          totalPay: s.totalPay,
-          workingDays: workingDays,
-          hoursPerShift: hoursPerShift,
-          normalHourlyRate: s.normalHourlyRate,
-          overtimeRate: overtimeRate,
-          perDayHours: s.perDayHours,
-          absenceCount: s.absenceCount,
-        ),
+        onSavePdf: () async {
+          final suggestion = 'working_hours_report';
+          final inputName = await _askFileName(context, suggestion: suggestion);
+          if (inputName == null) return;
+          final name = inputName.toLowerCase().endsWith('.pdf') ? inputName : '$inputName.pdf';
+          await _reportGen.generateAndShare(
+            t: t,
+            csvPath: s.csvPath,
+            payOvertimeSeparately: s.payOvertimeSeparately,
+            normalHours: s.normalMinutes / 60.0,
+            overtimeHours: s.overtimeMinutes / 60.0,
+            normalPay: s.normalPay,
+            overtimePay: s.overtimePay,
+            totalPay: s.totalPay,
+            workingDays: workingDays,
+            hoursPerShift: hoursPerShift,
+            normalHourlyRate: s.normalHourlyRate,
+            overtimeRate: overtimeRate,
+            perDayHours: s.perDayHours,
+            absenceCount: s.absenceCount,
+            fileName: name,
+          );
+        },
       ),
     );
   }
@@ -161,7 +207,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
                         icon: const Icon(Icons.upload_file),
                         label: Text(_controller.state.csvPath == null
                             ? t.selectCsv
-                            : '${t.selectedCsv}: ${_controller.state.csvPath!.split(Platform.pathSeparator).last}'),
+                            : '${_controller.state.csvPath!.split(Platform.pathSeparator).last}'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -240,7 +286,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
                   ),
                 ),
                 Container(
-                  alignment: Alignment.center,
+                  alignment: Alignment.bottomCenter,
                   child: Text('© 2026 Hasan Zawahra • All Rights Reserved', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
                 ),
               ],

@@ -34,5 +34,13 @@
   "invalidWorkingDaysNumbers" : "يرجى إدخال قيم رقمية صحيحة لأيام العمل.",
   "invalidHoursPerShiftNumbers" : "يرجى إدخال قيم رقمية صحيحة لساعات الدوام.",
   "absences": "الغيابات",
-  "downloadReport": "تحميل التقرير"
+  "downloadReport": "تحميل التقرير",
+  "date": "التاريخ",
+  "hours" : "الساعات",
+  "hourlyRates": "معدلات الأجر لكل ساعة",
+  "pay" : "الأجر",
+  "save" : "حفظ",
+  "cancel" : "إلغاء",
+    "fileName" : "اسم الملف",
+  "enter" : "أدخل"
 }

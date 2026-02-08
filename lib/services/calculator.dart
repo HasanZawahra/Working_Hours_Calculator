@@ -53,7 +53,7 @@ class Calculator {
     double normalPay;
     double overtimePay;
 
-    if (payOvertimeSeparately) {
+    if (payOvertimeSeparately && overtimeRate > 0) {
       normalPay = normalHours * normalHourlyRate;
       overtimePay = overtimeHours * overtimeRate;
     } else {

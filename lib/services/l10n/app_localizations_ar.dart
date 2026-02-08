@@ -121,4 +121,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get downloadReport => 'تحميل التقرير';
+
+  @override
+  String get date => 'التاريخ';
+
+  @override
+  String get hours => 'الساعات';
+
+  @override
+  String get hourlyRates => 'معدلات الأجر لكل ساعة';
+
+  @override
+  String get pay => 'الأجر';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get fileName => 'اسم الملف';
+
+  @override
+  String get enter => 'أدخل';
 }

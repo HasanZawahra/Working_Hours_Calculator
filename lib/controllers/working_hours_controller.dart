@@ -2,6 +2,7 @@ import 'dart:io';
 import '../services/csv_parser.dart';
 import '../services/calculator.dart';
 
+// dart
 class WorkingHoursState {
   final String? csvPath;
   final double normalMinutes;
@@ -28,7 +29,7 @@ class WorkingHoursState {
   });
 
   WorkingHoursState copyWith({
-    String? csvPath,
+    Object? csvPath = _noValue,
     double? normalMinutes,
     double? overtimeMinutes,
     double? normalHourlyRate,
@@ -40,7 +41,7 @@ class WorkingHoursState {
     int? absenceCount,
   }) {
     return WorkingHoursState(
-      csvPath: csvPath ?? this.csvPath,
+      csvPath: identical(csvPath, _noValue) ? this.csvPath : csvPath as String?,
       normalMinutes: normalMinutes ?? this.normalMinutes,
       overtimeMinutes: overtimeMinutes ?? this.overtimeMinutes,
       normalHourlyRate: normalHourlyRate ?? this.normalHourlyRate,
@@ -54,7 +55,9 @@ class WorkingHoursState {
   }
 }
 
-class WorkingHoursController {
+const _noValue = Object();
+
+  class WorkingHoursController {
   final _parser = CsvParser();
   final _calculator = Calculator();
 

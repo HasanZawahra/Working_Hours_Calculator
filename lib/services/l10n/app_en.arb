@@ -34,5 +34,13 @@
   "invalidWorkingDaysNumbers" : "Please enter valid numeric values for working days.",
   "invalidHoursPerShiftNumbers" : "Please enter valid numeric values for hours per shift.",
   "absences": "Absences",
-  "downloadReport": "Download report"
+  "downloadReport": "Download report",
+  "date": "Date",
+  "hours" : "Hours",
+  "hourlyRates": "Hourly rates",
+  "pay" : "Pay",
+  "save" : "Save",
+  "cancel" : "Cancel",
+  "fileName" : "File name",
+  "enter" : "Enter"
 }

@@ -121,4 +121,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadReport => 'Download report';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get hours => 'Hours';
+
+  @override
+  String get hourlyRates => 'Hourly rates';
+
+  @override
+  String get pay => 'Pay';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get fileName => 'File name';
+
+  @override
+  String get enter => 'Enter';
 }
