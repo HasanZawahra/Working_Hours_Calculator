@@ -142,7 +142,7 @@ class ReportGenerator {
                           pw.Padding(
                             padding: pw.EdgeInsets.all(cellPad),
                             child: pw.Text(
-                              'Date',
+                              t.date,
                               style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: tableHeaderSize),
                               textAlign: isArabic ? pw.TextAlign.right : pw.TextAlign.left,
                             ),
@@ -150,7 +150,7 @@ class ReportGenerator {
                           pw.Padding(
                             padding: pw.EdgeInsets.all(cellPad),
                             child: pw.Text(
-                              'Hours',
+                              t.hours,
                               style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: tableHeaderSize),
                               textAlign: isArabic ? pw.TextAlign.right : pw.TextAlign.left,
                             ),
@@ -190,7 +190,7 @@ class ReportGenerator {
                   // Calculations under the table (no extra helpers needed)
 
                   pw.Text(
-                    'Hours',
+                    t.hours,
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     textAlign: isArabic ? pw.TextAlign.right : pw.TextAlign.left,
                   ),
@@ -205,7 +205,7 @@ class ReportGenerator {
                   pw.SizedBox(height: vGap),
 
                   pw.Text(
-                    'Hourly rates',
+                    t.hourlyRates,
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     textAlign: isArabic ? pw.TextAlign.right : pw.TextAlign.left,
                   ),
@@ -220,7 +220,7 @@ class ReportGenerator {
 
                   if (payOvertimeSeparately) ...[
                     pw.Text(
-                       'Pay',
+                       t.pay,
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                       textAlign: isArabic ? pw.TextAlign.right : pw.TextAlign.left,
                     ),

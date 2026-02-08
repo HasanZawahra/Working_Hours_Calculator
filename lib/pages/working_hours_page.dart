@@ -111,20 +111,20 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Enter File Name'),
+        title: Text('${t.enter} ${t.fileName.toLowerCase()}'),
         content: TextField(
           controller: controller,
           decoration: InputDecoration(
-            labelText: 'File Name',
+            labelText: t.fileName,
             hintText: 'working_hours_report',
           ),
           autofocus: true,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text('Save'),
+            child: Text(t.save),
           ),
         ],
       ),
@@ -207,7 +207,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
                         icon: const Icon(Icons.upload_file),
                         label: Text(_controller.state.csvPath == null
                             ? t.selectCsv
-                            : '${t.selectedCsv}: ${_controller.state.csvPath!.split(Platform.pathSeparator).last}'),
+                            : '${_controller.state.csvPath!.split(Platform.pathSeparator).last}'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -286,7 +286,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
                   ),
                 ),
                 Container(
-                  alignment: Alignment.center,
+                  alignment: Alignment.bottomCenter,
                   child: Text('© 2026 Hasan Zawahra • All Rights Reserved', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
                 ),
               ],
