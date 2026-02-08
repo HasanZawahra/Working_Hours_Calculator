@@ -108,7 +108,7 @@ class ReportGenerator {
     pw.Widget _hdr(String s) {
       return pw.Container(
         height: (tableRowHeight > 0.0) ? tableRowHeight : null,
-        alignment: isArabic ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
+        alignment: isArabic ? pw.Alignment.center : pw.Alignment.centerLeft,
         child: pw.Padding(
           padding: pw.EdgeInsets.all(tableCellPad),
           child: pw.Text(
@@ -175,7 +175,12 @@ class ReportGenerator {
                 children: [
                   if (displayName != null) ...[
                     pw.SizedBox(height: 2),
-                    pw.Text(
+              pw.Container(
+                width: double.infinity,
+                alignment: isArabic ? pw.Alignment.centerRight : pw.Alignment.centerLeft,
+                child: pw.Directionality(
+                  textDirection: isArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+                  child: pw.Text(
                       displayName,
                       style: pw.TextStyle(
                         fontSize: compactOnePage ? 13 : 15,
@@ -186,6 +191,7 @@ class ReportGenerator {
                       maxLines: 1,
                       overflow: pw.TextOverflow.clip,
                     ),
+                    ),)
                   ],
 
                   pw.SizedBox(height: vGap),
@@ -207,40 +213,40 @@ class ReportGenerator {
                   pw.Table(
                     border: pw.TableBorder.all(width: 0.5, color: PdfColors.grey300),
                     columnWidths: const {
-                      0: pw.FlexColumnWidth(2.0), // weekday
-                      1: pw.FlexColumnWidth(2.2), // date
-                      2: pw.FlexColumnWidth(1.55), // start
-                      3: pw.FlexColumnWidth(1.55), // end
-                      4: pw.FlexColumnWidth(1.35), // work
                       5: pw.FlexColumnWidth(1.35), // OT
+                      4: pw.FlexColumnWidth(1.35), // work
+                      3: pw.FlexColumnWidth(1.55), // end
+                      2: pw.FlexColumnWidth(1.55), // start
+                      1: pw.FlexColumnWidth(2.2), // date
+                      0: pw.FlexColumnWidth(2.0), // weekday
                     },
                     children: [
                       pw.TableRow(
                         decoration: const pw.BoxDecoration(color: PdfColors.grey100),
                         children: [
-                          _hdr(weekdayLabel),
-                          _hdr(dateLabel),
-                          _hdr(startLabel),
-                          _hdr(endLabel),
-                          _hdr(workLabel),
                           _hdr(otLabel),
+                          _hdr(workLabel),
+                          _hdr(endLabel),
+                          _hdr(startLabel),
+                          _hdr(dateLabel),
+                          _hdr(weekdayLabel),
                         ],
                       ),
                       ...workDayRows.map((r) {
                         final total = r.workedHours;
-                        final normal = total.clamp(0, hoursPerShift);
+                        final normal = total.clamp(0, total);
                         final ot = (total - hoursPerShift).clamp(0, double.infinity);
 
                         final weekday = (r.date == null) ? '-' : _weekdayName(r.date!);
 
                         return pw.TableRow(
                           children: [
-                            _cell(weekday, ltr: false),
-                            _cell(r.dateRaw, ltr: true),
-                            _cell(r.start, ltr: true),
+                            _cell(ot.toStringAsFixed(2), ltr: true, alignment: pw.Alignment.topCenter),
+                            _cell(normal.toStringAsFixed(2), ltr: true, alignment: pw.Alignment.topCenter),
                             _cell(r.end, ltr: true),
-                            _cell(normal.toStringAsFixed(2), ltr: true, alignment: pw.Alignment.center),
-                            _cell(ot.toStringAsFixed(2), ltr: true, alignment: pw.Alignment.center),
+                            _cell(r.start, ltr: true),
+                            _cell(r.dateRaw, ltr: true),
+                            _cell(weekday, ltr: false),
                           ],
                         );
                       }),
