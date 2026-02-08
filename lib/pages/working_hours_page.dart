@@ -54,9 +54,19 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
       ),
     );
   }
+  bool _isNumber(String s) => double.tryParse(s) != null;
 
   Future<void> _compute() async {
     final t = AppLocalizations.of(context);
+
+    if (!_isNumber(_salaryCtrl.text) ||
+        !_isNumber(_workingDaysCtrl.text) ||
+        !_isNumber(_hoursPerShiftCtrl.text) ||
+        (_controller.state.payOvertimeSeparately && _overtimeRateCtrl.text.isNotEmpty && !_isNumber(_overtimeRateCtrl.text))) {
+      _showError(t.error, t.invalidNumbers);
+      return;
+    }
+
     if (_controller.state.csvPath == null) {
       _showError(t.error, t.pleaseSelectCsv);
       return;
