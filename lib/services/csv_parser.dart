@@ -40,7 +40,14 @@ class CsvParser {
           continue;
         }
 
-        intervals.add(Interval(date, minutes.toDouble()));
+        intervals.add(
+          Interval(
+            date,
+            minutes.toDouble(),
+            start: startRaw,
+            end: endRaw,
+          ),
+        );
       }
       return CsvParseResult(intervals: intervals, absenceCount: absences);
     }
@@ -105,7 +112,15 @@ class CsvParser {
       }
 
       final dateKey = (date == null || date.isEmpty) ? 'row_${i - startIdx + 1}' : date;
-      intervals.add(Interval(dateKey, minutes.toDouble()));
+
+      intervals.add(
+        Interval(
+          dateKey,
+          minutes.toDouble(),
+          start: startStr,
+          end: endStr,
+        ),
+      );
     }
 
     return CsvParseResult(intervals: intervals, absenceCount: absences);

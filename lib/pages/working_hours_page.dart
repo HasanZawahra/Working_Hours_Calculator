@@ -101,7 +101,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     );
 
     setState(() {});
-    _showReport(newState, workingDays, hoursPerShift, overtimeRate);
+    _showReport(newState, workingDays, hoursPerShift, overtimeRate, salary);
   }
 
   // Prompt for a custom PDF file name and return it (without enforcing extension)
@@ -132,7 +132,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
     return result == null || result.isEmpty ? null : result;
   }
 
-  void _showReport(WorkingHoursState s, double workingDays, double hoursPerShift, double overtimeRate) {
+  void _showReport(WorkingHoursState s, double workingDays, double hoursPerShift, double overtimeRate, double salary) {
     final t = AppLocalizations.of(context);
     showDialog(
       context: context,
@@ -159,6 +159,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
           await _reportGen.generateAndShare(
             t: t,
             csvPath: s.csvPath,
+            salary: salary,
             payOvertimeSeparately: s.payOvertimeSeparately,
             normalHours: s.normalMinutes / 60.0,
             overtimeHours: s.overtimeMinutes / 60.0,
@@ -169,7 +170,7 @@ class _WorkingHoursPageState extends State<WorkingHoursPage> {
             hoursPerShift: hoursPerShift,
             normalHourlyRate: s.normalHourlyRate,
             overtimeRate: overtimeRate,
-            perDayHours: s.perDayHours,
+            workDayRows: s.workDayRows, // NEW
             absenceCount: s.absenceCount,
             fileName: name,
           );
