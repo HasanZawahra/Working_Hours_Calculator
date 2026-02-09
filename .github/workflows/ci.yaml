@@ -35,12 +35,11 @@ jobs:
           flutter config --enable-windows-desktop
           flutter build windows --release
 
-      - name: Create unsigned MSIX
-        run: flutter pub run msix:create
-
-      - name: Upload MSIX artifact
+      - name: Upload Windows artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: msix
-          path: build/windows/msix/*.msix
+          name: flutter-windows-${{ runner.os }}
+          path: |
+            build/windows/x64/runner/Release/**
           if-no-files-found: warn

@@ -43,17 +43,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  msix: ^3.16.13
-
-msix_config:
-  display_name: Working Hours Calculator
-  identity_name: com.hasan.workhourscalculator
-  publishe_display_name: Hasan Zawahra
-  publisher: CN=Hasan Zawahra
-  logo_path: assets/windows/icon.png
-  store: false
-  install_certificate: false
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
