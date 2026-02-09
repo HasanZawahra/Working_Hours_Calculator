@@ -47,14 +47,13 @@ dev_dependencies:
   msix: ^3.16.13
 
 msix_config:
-  displayName: Working Hours Calculator
-  identityName: com.hasan.workhourscalculator
-  publisherDisplayName: Hasan Zawahra
+  display_name: Working Hours Calculator
+  identity_name: com.hasan.workhourscalculator
+  publishe_display_name: Hasan Zawahra
   publisher: CN=Hasan Zawahra
-  logoPath: assets/windows/icon.png
+  logo_path: assets/windows/icon.png
   store: false
-  installCertificate: false
-  signMsix: false
+  install_certificate: false
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
