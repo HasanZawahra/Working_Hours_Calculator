@@ -38,17 +38,6 @@ jobs:
       - name: Create unsigned MSIX
         run: flutter pub run msix:create
 
-      - name: Decode signing cert
-        if: ${{ secrets.WINDOWS_PFX_BASE64 && secrets.WINDOWS_PFX_PASSWORD }}
-        shell: powershell
-        run: |
-          $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_PFX_BASE64 }}")
-          [IO.File]::WriteAllBytes("signing_cert.pfx", $bytes)
-
-      - name: Create signed MSIX
-        if: ${{ secrets.WINDOWS_PFX_BASE64 && secrets.WINDOWS_PFX_PASSWORD }}
-        run: flutter pub run msix:create --signingCertificatePath signing_cert.pfx --signingCertificatePassword "${{ secrets.WINDOWS_PFX_PASSWORD }}"
-
       - name: Upload MSIX artifact
         uses: actions/upload-artifact@v4
         with:
