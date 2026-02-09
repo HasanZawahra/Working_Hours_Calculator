@@ -53,6 +53,7 @@ msix_config:
   publisher: CN=Hasan Zawahra
   logoPath: assets/windows/icon.png
   store: false
+  installCertificate: false
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
