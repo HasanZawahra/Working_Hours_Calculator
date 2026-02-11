@@ -200,7 +200,6 @@ class ReportGenerator {
 
                   labeledRow( isArabic ? 'الراتب الشهري' :'Monthly salary', salary.toStringAsFixed(2)),
                   labeledRow(t.hoursPerShiftNormal, '${hoursPerShift.toStringAsFixed(2)} h'),
-                  labeledRow(t.overtimeRateLabel, overtimeRate.toStringAsFixed(2)),
 
                   pw.SizedBox(height: vGap),
                   pw.Divider(height: 1),
