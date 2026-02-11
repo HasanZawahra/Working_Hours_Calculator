@@ -199,6 +199,7 @@ class ReportGenerator {
                   pw.SizedBox(height: vGap),
 
                   labeledRow( isArabic ? 'الراتب الشهري' :'Monthly salary', salary.toStringAsFixed(2)),
+                  labeledRow( isArabic ? 'عدد ايام العمل شهريا' :'Work days monthly', workingDays.toStringAsFixed(2)),
                   labeledRow(t.hoursPerShiftNormal, '${hoursPerShift.toStringAsFixed(2)} h'),
 
                   pw.SizedBox(height: vGap),
