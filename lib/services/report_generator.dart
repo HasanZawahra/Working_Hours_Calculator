@@ -233,11 +233,25 @@ class ReportGenerator {
                         ],
                       ),
                       ...workDayRows.map((r) {
+                        final weekday = (r.date == null) ? '-' : _weekdayName(r.date!);
+
+                        if (r.isAbsent) {
+                          return pw.TableRow(
+                            decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                            children: [
+                              _cell('-', ltr: true),
+                              _cell('', ltr: true),
+                              _cell('', ltr: true),
+                              _cell('', ltr: true),
+                              _cell(r.dateRaw, ltr: true),
+                              _cell(weekday, ltr: false),
+                            ],
+                          );
+                        }
+
                         final total = r.workedHours;
                         final normal = total.clamp(0, total);
                         final ot = (total - hoursPerShift).clamp(0, double.infinity);
-
-                        final weekday = (r.date == null) ? '-' : _weekdayName(r.date!);
 
                         return pw.TableRow(
                           children: [
