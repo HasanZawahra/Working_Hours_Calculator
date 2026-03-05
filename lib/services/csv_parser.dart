@@ -7,6 +7,7 @@ class CsvParser {
     if (lines.isEmpty) return const CsvParseResult(intervals: [], absenceCount: 0);
 
     int absences = 0;
+    final absenceDates = <String>[]; // NEW
 
     // Detect 3-row (date,start,end) sheet-like format
     final firstCells = _splitCsvLine(lines[0]);
@@ -24,6 +25,7 @@ class CsvParser {
         final endRaw = ends[i].trim();
         if (startRaw.isEmpty || endRaw.isEmpty) {
           absences++;
+          absenceDates.add(date);
           continue;
         }
 
@@ -31,12 +33,14 @@ class CsvParser {
         final end = _parseHhMm(endRaw);
         if (start == null || end == null) {
           absences++;
+          absenceDates.add(date);
           continue;
         }
 
         final minutes = _diffMinutesAcrossMidnight(start, end);
         if (minutes <= 0) {
           absences++;
+          absenceDates.add(date);
           continue;
         }
 
@@ -49,7 +53,7 @@ class CsvParser {
           ),
         );
       }
-      return CsvParseResult(intervals: intervals, absenceCount: absences);
+      return CsvParseResult(intervals: intervals, absenceCount: absences, absenceDates: absenceDates);
     }
 
     // Fallback: row-per-shift formats
@@ -74,6 +78,7 @@ class CsvParser {
         endStr = cells[2];
         if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
           absences++;
+          if (date != null && date.trim().isNotEmpty) absenceDates.add(date);
           continue;
         }
       } else if (cells.length == 2) {
@@ -83,6 +88,7 @@ class CsvParser {
         endStr = pair.$2;
         if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
           absences++;
+          if (date != null && date.trim().isNotEmpty) absenceDates.add(date);
           continue;
         }
       } else if (cells.length == 1) {
@@ -91,10 +97,10 @@ class CsvParser {
         endStr = pair.$2;
         if (!_nonEmpty(startStr) || !_nonEmpty(endStr)) {
           absences++;
+          // no reliable date in this format
           continue;
         }
       } else {
-        // Unreachable due to line filtering, but keep safe.
         continue;
       }
 
@@ -102,12 +108,14 @@ class CsvParser {
       final end = _parseHhMm(endStr!);
       if (start == null || end == null) {
         absences++;
+        if (date != null && date.trim().isNotEmpty) absenceDates.add(date);
         continue;
       }
 
       final minutes = _diffMinutesAcrossMidnight(start, end);
       if (minutes <= 0) {
         absences++;
+        if (date != null && date.trim().isNotEmpty) absenceDates.add(date);
         continue;
       }
 
@@ -123,7 +131,7 @@ class CsvParser {
       );
     }
 
-    return CsvParseResult(intervals: intervals, absenceCount: absences);
+    return CsvParseResult(intervals: intervals, absenceCount: absences, absenceDates: absenceDates);
   }
 
   // Calculates duration, supporting overnight (end < start).

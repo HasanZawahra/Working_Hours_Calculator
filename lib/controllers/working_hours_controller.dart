@@ -172,13 +172,19 @@ class WorkingHoursController {
       if (i.end != null) agg.ends.add(i.end!);
     }
 
+    // NEW: add absent rows that have a date key but no interval
+    for (final d in parsed.absenceDates) {
+      byDate.putIfAbsent(d, () => _Agg(dateRaw: d, date: _tryParseDate(d), isAbsent: true));
+    }
+
     final workDayRows = byDate.values
         .map((a) => WorkDayRow(
               dateRaw: a.dateRaw,
               date: a.date,
-              start: (a.starts.isEmpty) ? '-' : (a.starts..sort()).first,
-              end: (a.ends.isEmpty) ? '-' : (a.ends..sort()).last,
-              workedHours: a.totalMinutes / 60.0,
+              start: a.isAbsent ? '' : ((a.starts.isEmpty) ? '-' : (a.starts..sort()).first),
+              end: a.isAbsent ? '' : ((a.ends.isEmpty) ? '-' : (a.ends..sort()).last),
+              workedHours: a.isAbsent ? 0.0 : (a.totalMinutes / 60.0),
+              isAbsent: a.isAbsent,
             ))
         .toList()
       ..sort((x, y) {
@@ -212,5 +218,6 @@ class _Agg {
   final List<String> starts = [];
   final List<String> ends = [];
 
-  _Agg({required this.dateRaw, required this.date});
+  final bool isAbsent; // NEW
+  _Agg({required this.dateRaw, required this.date, this.isAbsent = false});
 }

@@ -4,6 +4,7 @@ class WorkDayRow {
   final String start;       // HH:mm
   final String end;         // HH:mm
   final double workedHours; // total hours that day (incl. overtime)
+  final bool isAbsent;      // NEW
 
   const WorkDayRow({
     required this.dateRaw,
@@ -11,5 +12,6 @@ class WorkDayRow {
     required this.start,
     required this.end,
     required this.workedHours,
+    this.isAbsent = false,
   });
 }
