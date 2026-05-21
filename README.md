@@ -1,16 +1,45 @@
-# whcalculator
+# Working Hours Calculator
 
-A new Flutter project.
+A Flutter application designed to calculate and manage working hours efficiently. This tool is ideal for professionals and teams looking to track work intervals, generate reports, and analyze productivity.
+
+## Features
+- Parse CSV files to import work data.
+- Calculate total working hours and intervals.
+- Generate detailed reports.
+- Multi-platform support: Android, iOS, Web, Windows, macOS, and Linux.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) installed.
+- A compatible IDE such as [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/).
 
-A few resources to get you started if this is your first Flutter project:
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/working_hours_calculator.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd working_hours_calculator
+   ```
+3. Fetch dependencies:
+   ```bash
+   flutter pub get
+   ```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Running the App
+- To run the app on a connected device or emulator:
+  ```bash
+  flutter run
+  ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Folder Structure
+- `lib/`: Contains the main application code.
+- `assets/`: Stores fonts and other static resources.
+
+## License
+This project is licensed under the [MIT License](LICENSE).
+
+---
+For more details, refer to the [Flutter documentation](https://docs.flutter.dev/).
