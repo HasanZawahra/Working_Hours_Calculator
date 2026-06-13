@@ -1,3 +1,5 @@
+MIT License
+
 Copyright \(c\) 2026 Hasan Zawahra. All Rights Reserved.
 
 This software and its documentation are proprietary to Hasan Zawahra.
