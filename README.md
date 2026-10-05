@@ -2,6 +2,8 @@
 
 A Flutter application for calculating working hours from CSV input, reviewing work intervals, and generating shareable PDF reports. It is suitable for tracking daily shifts, overtime, and monthly summaries in both English and Arabic.
 
+![Working Hours Report](assets/images/report.png)
+
 ## What this app does
 - Imports work data from CSV files.
 - Calculates work intervals, total working hours, and overtime-related values.
